@@ -1,0 +1,40 @@
+step 1 : mongodb://localhost:27017  
+step 2 : create database 
+           database name   : DYPSOE
+           Collection name : Teachers
+step 3:  add another collection : students and Department 
+step 4 : Insert the sample Documents 
+          Teachers :
+[
+  { "Tname": "Praveen", "dno": 1, "dname": "COMP", "experience": 6, "salary": 12000, "date_of_joining": "2019-07-15" },
+  { "Tname": "Anita", "dno": 2, "dname": "IT", "experience": 4, "salary": 9000, "date_of_joining": "2020-01-10" },
+  { "Tname": "Raj", "dno": 3, "dname": "E&TC", "experience": 8, "salary": 15000, "date_of_joining": "2015-03-21" },
+  { "Tname": "Sonal", "dno": 1, "dname": "COMP", "experience": 3, "salary": 11000, "date_of_joining": "2021-09-01" },
+  { "Tname": "Ramesh", "dno": 2, "dname": "IT", "experience": 5, "salary": 10000, "date_of_joining": "2018-06-30" }
+]
+
+         Students : 
+[
+  { "Sname": "abc", "roll_no": 1, "class": "FY" },
+  { "Sname": "xyz", "roll_no": 2, "class": "SY" },
+  { "Sname": "pqr", "roll_no": 3, "class": "TY" }
+]
+
+step 5 : At the top of the collection window, there’s a “Filter” box.
+You can type MongoDB queries there
+1.Show all teachers : {}
+2. Teachers of computer department: { dname: "COMP" }
+3. Teachers of COMP, IT, and E&TC : { dname: { $in: ["COMP", "IT", "E&TC"] } }
+4.Teachers of COMP, IT, E&TC with salary >= 10000 :{ dname: { $in: ["COMP", "IT", "E&TC"] }, salary: { $gte: 10000 } }
+5. Students having roll_no=2 or Sname="xyz" : { $or: [ { roll_no: 2 }, { Sname: "xyz" } ] }
+6.Select only Tname and experience: {}
+7. Perform Update / Delete in Compass
+Update a teacher’s experience:
+
+Filter: { Tname: "Praveen" }
+
+Click the document → Edit → Change experience to 10 → Save
+
+
+
+  

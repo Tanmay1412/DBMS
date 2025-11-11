@@ -1,0 +1,72 @@
+DROP DATABASE IF EXISTS LibraryDB;
+CREATE DATABASE IF NOT EXISTS LibraryDB;
+USE LibraryDB;
+
+DROP TABLE IF EXISTS Fine;
+DROP TABLE IF EXISTS Borrower;
+
+CREATE TABLE Borrower (
+  Roll_no INT PRIMARY KEY,
+  Name VARCHAR(30),
+  Date_of_Issue DATE,
+  Name_of_Book VARCHAR(50),
+  Status CHAR(1)
+);
+
+CREATE TABLE Fine (
+  Roll_no INT,
+  Fine_Date DATE,
+  Amt DECIMAL(10,2)
+);
+
+INSERT INTO Borrower VALUES
+(1, 'Amit', DATE_SUB(CURDATE(), INTERVAL 20 DAY), 'DBMS', 'I'),
+(2, 'Neha', DATE_SUB(CURDATE(), INTERVAL 40 DAY), 'Networking', 'I'),
+(3, 'Ravi', DATE_SUB(CURDATE(), INTERVAL 10 DAY), 'Python', 'I');
+
+DELIMITER $$
+
+CREATE PROCEDURE ReturnBook(IN p_rollno INT, IN p_book VARCHAR(50))
+BEGIN
+  DECLARE v_issue_date DATE;
+  DECLARE v_days INT;
+  DECLARE v_fine_amt DECIMAL(10,2) DEFAULT 0;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+  BEGIN
+    SELECT 'Error: No issued book found for given Roll_No and Book_Name.' AS Message;
+  END;
+
+  SELECT Date_of_Issue INTO v_issue_date
+  FROM Borrower
+  WHERE Roll_no = p_rollno AND Name_of_Book = p_book AND Status = 'I';
+
+  SET v_days = DATEDIFF(CURDATE(), v_issue_date);
+
+  IF v_days > 30 THEN
+    SET v_fine_amt = v_days * 50;
+  ELSEIF v_days BETWEEN 15 AND 30 THEN
+    SET v_fine_amt = v_days * 5;
+  ELSE
+    SET v_fine_amt = 0;
+  END IF;
+
+  UPDATE Borrower
+  SET Status = 'R'
+  WHERE Roll_no = p_rollno AND Name_of_Book = p_book;
+
+  IF v_fine_amt > 0 THEN
+    INSERT INTO Fine VALUES (p_rollno, CURDATE(), v_fine_amt);
+  END IF;
+
+  SELECT CONCAT('Book Returned Successfully. Days: ', v_days, ', Fine: Rs. ', v_fine_amt) AS Message;
+END $$
+
+DELIMITER ;
+
+CALL ReturnBook(1, 'DBMS');
+CALL ReturnBook(2, 'Networking');
+CALL ReturnBook(3, 'Python');
+
+SELECT * FROM Borrower;
+SELECT * FROM Fine;
